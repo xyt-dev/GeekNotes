@@ -3,7 +3,7 @@ lang: zh-CN
 title: 项目配置
 description: Notes using vuepress
 order: 1
-icon: lightbulb
+icon: home
 
 ---
 
@@ -48,14 +48,10 @@ pnpm add -D @vuepress/plugin-icon@next
   import { hopeTheme } from "vuepress-theme-hope"
   import { defineUserConfig } from "vuepress/cli"
   import { cut } from "nodejs-jieba"
-  import { sidebarConfig } from "./sidebar"
 
   export default defineUserConfig({
     bundler: viteBundler(),
     title: "Title Name",
-    base: "/", // 部署站点的根目录路径
-    head: [['link', { rel: 'icon', href: '/path/to/.svg' }]], // <head> 标签内插入内容
-
     theme: hopeTheme({
       // 导航栏
       navbar: [
@@ -63,7 +59,9 @@ pnpm add -D @vuepress/plugin-icon@next
       ],
 
       // 侧边栏
-      sidebarConfig,
+      sidebar: [
+
+      ],
 
       plugins: {
         // 搜索
@@ -86,7 +84,6 @@ pnpm add -D @vuepress/plugin-icon@next
           // 想使用的主题内置组件
           components: [
             "BiliBili",
-            // ...
           ],
         },
       },
@@ -99,27 +96,6 @@ pnpm add -D @vuepress/plugin-icon@next
     }),
 
   })
-  ```
-- **.vuepress/sidebar.js:**
-  ```js
-  import { sidebar } from "vuepress-theme-hope";
-
-  export const sidebarConfig = sidebar({
-    "/": [
-      {
-        text: "项目安装",
-        link: "README.md",
-        icon: "lightbulb",
-      },
-      {
-        text: "测试",
-        link: "test/",
-        prefix: "test/",
-        children: ["test.md"],
-      },
-      // ...
-    ]
-  });
   ```
 
 - **.gitignore:**

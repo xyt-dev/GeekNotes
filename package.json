@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@vuepress/bundler-vite": "2.0.0-rc.19",
+    "@vuepress/plugin-icon": "2.0.0-rc.71",
     "@vuepress/plugin-search": "2.0.0-rc.70",
     "@vuepress/plugin-slimsearch": "2.0.0-rc.70",
     "@vuepress/theme-default": "2.0.0-rc.70",
