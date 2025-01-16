@@ -17,7 +17,7 @@ export default defineUserConfig({
     ],
 
     // 侧边栏
-    sidebarConfig,
+    sidebar: sidebarConfig,
 
     plugins: {
       // 搜索
@@ -30,6 +30,8 @@ export default defineUserConfig({
         },
         searchDelay: 50,
       },
+
+      catalog: false, // 禁止默认生成目录页
 
       icon: {
         assets: "fontawesome",

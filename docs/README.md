@@ -1,15 +1,12 @@
 ---
 lang: zh-CN
-title: 项目配置
-description: Notes using vuepress
-order: 1
+title: 项目安装与配置
 icon: lightbulb
-
 ---
 
 # XY6Notes
 
-## 部署
+## 安装 (pnpm)
 
 ```shell
 # 安装 vuepress:
@@ -63,7 +60,8 @@ pnpm add -D @vuepress/plugin-icon@next
       ],
 
       // 侧边栏
-      sidebarConfig,
+      sidebar: sidebarConfig,
+
 
       plugins: {
         // 搜索
@@ -81,6 +79,8 @@ pnpm add -D @vuepress/plugin-icon@next
         icon: {
           assets: "fontawesome",
         },
+
+        catalog: false, // 禁止默认生成目录页
 
         components: {
           // 想使用的主题内置组件
@@ -107,17 +107,13 @@ pnpm add -D @vuepress/plugin-icon@next
   export const sidebarConfig = sidebar({
     "/": [
       {
-        text: "项目安装",
-        link: "README.md",
-        icon: "lightbulb",
-      },
-      {
         text: "测试",
-        link: "test/",
+        link: false,
         prefix: "test/",
-        children: ["test.md"],
+        children: "structure",
       },
       // ...
+      "/",
     ]
   });
   ```

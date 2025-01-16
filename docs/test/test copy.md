@@ -1,6 +1,6 @@
 ---
 lang: zh-CN
-title: test2
+title: test1
 description: Notes using vuepress
 order: 1
 icon: home
