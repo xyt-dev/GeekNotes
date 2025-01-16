@@ -40,7 +40,8 @@ export default defineUserConfig({
       components: {
         // 想使用的主题内置组件
         components: [
-          "BiliBili"
+          "BiliBili",
+          "Badge",
         ],
       },
     },

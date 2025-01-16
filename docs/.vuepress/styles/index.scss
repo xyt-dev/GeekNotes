@@ -1,3 +1,7 @@
+// @tailwind base; // 避免覆盖 vuepress 默认样式
+@tailwind components;
+@tailwind utilities;
+
 // place your custom styles here
 // div {
   // font-size: 20px;
