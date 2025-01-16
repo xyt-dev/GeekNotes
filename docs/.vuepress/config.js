@@ -6,7 +6,7 @@ import { sidebarConfig } from "./sidebar"
 
 export default defineUserConfig({
   bundler: viteBundler(),
-  title: "XV6 Notes",
+  title: "GeekNotes",
   base: "/", // 部署站点的根目录路径
   head: [['link', { rel: 'icon', href: '/icons/archlinux.svg' }]], // <head> 标签内插入内容
 

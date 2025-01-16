@@ -1,6 +1,6 @@
 ---
 lang: zh-CN
-title: 项目安装与配置
+title: 本项目安装与配置
 icon: lightbulb
 ---
 
@@ -15,10 +15,12 @@ pnpm add vue vuepress@next
 pnpm add -D @vuepress/bundler-vite@next @vuepress/theme-default@next
 # 可能提示需要安装 sass:
 pnpm add -D sass-embedded
-# 使用 vuepress-theme-hope 主题创建模板:
-pnpm create vuepress-theme-hope add [dirname] 
+# 安装 vuepress-theme-hope 主题
+pnpm add -D vuepress-theme-hope
+# 使用 vuepress-theme-hope 主题自动创建模板:
+# pnpm create vuepress-theme-hope add [dirname] 
 # 安装本地搜索插件和jieba分词:
-pnpm install -D @vuepress/plugin-slimsearch@next  
+pnpm add -D @vuepress/plugin-slimsearch@next  
 pnpm add nodejs-jieba
 # 安装图标支持
 pnpm add -D @vuepress/plugin-icon@next
@@ -61,7 +63,6 @@ pnpm add -D @vuepress/plugin-icon@next
 
       // 侧边栏
       sidebar: sidebarConfig,
-
 
       plugins: {
         // 搜索
