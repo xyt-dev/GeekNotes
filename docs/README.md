@@ -33,7 +33,9 @@ pnpm add -D tailwindcss postcss autoprefixer
 
 ## 配置
 
-[vuepress-theme-hope配置指南](https://theme-hope.vuejs.press/zh/guide/)
+### 基本配置
+
+参考: [vuepress-theme-hope配置指南](https://theme-hope.vuejs.press/zh/guide/)
 
 - **package.json:**
   - 可能需要添加 `"type": "module",` 切换为ECMA模式
