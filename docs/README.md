@@ -1,10 +1,10 @@
 ---
 lang: zh-CN
-title: 本项目安装与配置
-icon: lightbulb
+title: GeekNotes
+icon: home
 ---
 
-# XY6Notes
+# GeekNotes
 
 > 本项目基于 vuepress v2
 
@@ -169,7 +169,7 @@ pnpm add -D tailwindcss postcss autoprefixer
   ```
 
 然后在 .vuepress/styles/index.scss 中添加:
-```scss
+```scss:no-line-numbers
 // @tailwind base; // ** 注释避免覆盖 vuepress 的默认样式 **
 @tailwind components;
 @tailwind utilities;
@@ -288,7 +288,7 @@ export default {
 </script>
 ```
 
-然后创建 .vuepress/client.js 文件, 用来注册组件, 模板如下:
+然后创建 .vuepress/client.js 文件, 用来注册组件, 示例如下:
 ```js
 import { defineClientConfig } from 'vuepress/client'
 import EngWord from './components/EngWord.vue'
