@@ -1,7 +1,9 @@
 ---
 lang: zh-CN
 title: GeekNotes
+description: Notes using vuepress
 icon: home
+breadcrumbExclude: true
 ---
 
 # GeekNotes
@@ -148,9 +150,10 @@ pnpm add -D tailwindcss postcss autoprefixer
   /** @type {import('tailwindcss').Config} */
   export default {
     content: [
-      './docs/.vuepress/**/*.{vue,js,ts,jsx,tsx,md}', // 扫描  docs 目录下 VuePress 相关文件
-      './docs/*.md', // 扫描 docs 目录下所有 Markdown 文件
-      './docs/**/*.md', // 扫描 docs 目录下所有 Markdown 文件
+      './docs/.vuepress/**/*.{vue,js,ts,jsx,tsx}', // 扫描  docs 目录下 VuePress 相关文件
+    // 不要扫描 Markdown 文件，会导致 reload
+    // './docs/*.md', // 扫描所有 Markdown 文件
+    // './docs/**/*.md', // 扫描所有 Markdown 文件
     ],
     theme: {
       extend: {},

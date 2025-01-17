@@ -48,7 +48,6 @@ export default defineUserConfig({
 
     footer: "默认页脚",
 
-    hotReload: true,
     darkmode: "toggle",
     logo: "icons/archlinux.svg" // 默认 .vuepress/public 为根目录
   }),

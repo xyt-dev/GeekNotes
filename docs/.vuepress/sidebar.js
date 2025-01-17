@@ -2,10 +2,9 @@ import { sidebar } from "vuepress-theme-hope";
 
 export const sidebarConfig = sidebar({
   "/": [
-    "/",
     {
-      title: "Test",
-      prefix: "Test/",
+      text: "Rust",
+      prefix: "Rust/",
       link: false,
       collapsible: true,
       children: "structure",
