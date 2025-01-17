@@ -1,5 +1,6 @@
 ---
 title: vec<T>
+order: 2
 ---
 
 ### 创建Vec\<T\>
@@ -20,26 +21,12 @@ title: vec<T>
     ```
 使用 `vec![]` 宏创建Vec\<T\>同理, 但可以同时赋初值.
 
-### 可变与不可变
-
-```rust::no-line-numbers
-	let v = Vec::new(); // 绑定所有权时可变与不可变是数据本身的属性, 数据所有者规定数据不可变
-	let v = &mut v; // Err: cannot borrow `v` as mutable, as it is not declared as mutable
-	v.push(1); // Err: cannot borrow `v` as mutable, as it is not declared as mutable
-```
-
-```rust::no-line-numbers
-	let mut v = Vec::new(); // 数据所有者规定数据不可变
-	let v = &mut v; // 绑定引用时可变与不可变是引用变量本身的属性, 这里引用本身的绑定不可变, 对其引用的数据能进行可变操作.
-	v.push(1); // OK
-```
-
 ### 通过Wrapper给外部类型实现外部Trait
 
 以Vec\<String\>为例:
 ```rust:no-line-numbers
 use std::fmt;
-use std::ops::Deref;
+use std::ops::{Deref, DerefMut};
 
 struct Wrapper(Vec<String>);
 impl fmt::Display for Wrapper {
@@ -47,17 +34,27 @@ impl fmt::Display for Wrapper {
     write!(f, "[{}]", self.join(", "))
   }
 }
+// Rust可以为实现了Deref的类型自动解引用, 简化使用
 impl Deref for Wrapper {
-  // Rust可以为实现了Deref的类型自动解引用, 简化使用
   type Target = Vec<String>;
-  fn deref(&self) -> &Vec<String> {
+  fn deref(&self) -> &Self::Target {
     &self.0
   }
 }
-
+// DerefMut: Deref
+impl DerefMut for Wrapper {
+  fn deref_mut(&mut self) -> &mut Self::Target {
+    &mut self.0
+  }
+}
 fn main() {
-  let w = Wrapper(vec![String::from("hello"), String::from("world")]);
+  let mut w = Wrapper(vec![String::from("hello"), String::from("world")]);
+  w.push(String::from("wow"));
   println!("w = {}", w);
 }
 ```
 
+> **当实例调用一个方法时, 编译器会按照以下顺序查找方法:**
+> 1. 检查类型本身是否实现了该方法, 优先调用
+> 2. 如果类型本身没有实现该方法, 则编译器尝试解引用(通过Deref或DerefMut), 此过程不断进行直到找到对应方法或无法继续解引用
+> 3. 如果解引用无法找到方法, 编译器会尝试引用(通过&或&mut), 此过程此过程不断进行直到找到对应方法或无法继续引用
