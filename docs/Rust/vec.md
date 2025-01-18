@@ -104,7 +104,7 @@ fn main() {
       len: usize,
   }
   ```
-  Vec\<T\>的底层是一个堆上分配的可变长度数组(capacity变化时需reallocate内存), 其中元素在内存中连续存放且对齐, 不支持编译期大小不确定的元素, 同时T也默认具有Sized(标记特征)约束, 所以使用Vec需保证T为编译期确定的静态大小类型.
+  Vec\<T\>的底层是一个堆上分配的可变长度数组(capacity变化时需reallocate内存), 其中元素在内存中连续存放且对齐, 不支持编译期大小不确定的元素, 同时T也默认具有Sized(标记特征)约束, 所以使用Vec需保证元素类型T为编译期确定的静态大小类型.
 
   > Global 是Rust标准库提供的 全局可调用(Global的含义)的 堆内存分配器, 用于给需要动态内存分配的类型(如Vec、Box、String)提供默认堆内存分配器, 在堆上分配连续内存. \
   > 其底层内存分配函数定义如下: 
@@ -114,3 +114,76 @@ fn main() {
   >   // ...
   > }
   > ```
+
+### 存储不同类型的元素
+
+#### 方案一: 使用枚举类型
+
+eg:
+```rust:no-line-numbers
+#[derive(Debug)]
+enum IpAddr {
+    V4(String),
+    V6(String)
+}
+fn main() {
+    let v = vec![
+        IpAddr::V4("127.0.0.1".to_string()),
+        IpAddr::V6("::1".to_string())
+    ];
+    for ip in v {
+        show_addr(ip)
+    }
+}
+fn show_addr(ip: IpAddr) {
+    println!("{:?}",ip);
+}
+```
+
+#### 方案二: 使用dyn Trait
+
+eg:
+```rust:no-line-numbers
+trait IpAddr {
+    fn display(&self);
+}
+struct V4(String);
+impl IpAddr for V4 {
+    fn display(&self) {
+        println!("ipv4: {:?}",self.0)
+    }
+}
+struct V6(String);
+impl IpAddr for V6 {
+    fn display(&self) {
+        println!("ipv6: {:?}",self.0)
+    }
+}
+fn main() {
+    let v: Vec<Box<dyn IpAddr>> = vec![
+        Box::new(V4("127.0.0.1".to_string())),
+        Box::new(V6("::1".to_string())),
+    ];
+    for ip in v {
+        ip.display();
+    }
+}
+```
+
+> struct Box 定义:
+> ```rust:no-line-numbers
+> pub struct Box<
+>   T: ?Sized,
+>   A: Allocator = Global,
+>>(Unique<T>, A);
+> ```
+> 其中 struct Unique\<T\> 的定义:
+> ```rust:no-line-numbers
+> pub struct Unique<T: ?Sized> {
+>    pointer: NonNull<T>,
+>    _marker: PhantomData<T>, // Zero-Sized Type, 用于为编译提供信息
+> }
+> ```
+> Unique\<T\>内部是一个非空**裸指针(*const)**, 其拥有其指向内存的所有权. (裸指针包含一个地址字段, 对于动态大小类型还包括一个记录内存大小的字段, 对于特征对象还包含虚表的地址的字段)
+>
+> Box\::\<T\>\::new(T)获取一个变量的所有权, 将其栈上的数据逐字节拷贝到堆上, 同时拥有该片堆内存的所有权(非Copy类型变量原栈上的内存释放掉); 变量的引用字段引用的数据不会拷贝, 如果其中引用指向的是栈上的数据，必须确保引用的生命周期足够长.
