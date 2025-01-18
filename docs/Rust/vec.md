@@ -1,5 +1,5 @@
 ---
-title: vec<T>
+title: Vec<T>
 order: 2
 ---
 
