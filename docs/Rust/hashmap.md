@@ -104,10 +104,10 @@ pub trait Iterator {
 ```rust:no-line-numbers
 pub trait FromIterator<A>: Sized {
   // 根据实参可知此处iter实际类型为IntoIter<(String, u32)>
+  // FromIterator::from_iter(self)相当于<具体实例 as FromIterator>::from_iter(self), 实际调用哪个具体实现还需要Self的类型信息, 而Self类型的推断依据是返回值相关上下文, 即泛型B的实际类型. (注意self只是iter的实参, 不依据此进行推断)
   fn from_iter<T: IntoIterator<Item = A>>(iter: T) -> Self; 
 }
 ```
-
 
 由于`collect`实际支持生成多种类型的目标集合, 因此我们需要通过类型标注`HashMap<_, _>`来帮助编译器推断其中泛型参数B的实际类型.
 上述定义中泛型B要求实现特征约束`FromIterator<(String, u32)>`, 而`HashMap<K, V>`确实实现了满足该条件的特征:
