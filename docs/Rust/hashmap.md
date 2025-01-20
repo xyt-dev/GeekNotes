@@ -53,7 +53,7 @@ let teams_map: HashMap<_, _> = teams_list.into_iter().collect(); // _ 为类型�
 以上代码使用`into_iter`方法将列表转为迭代器, 接着通过`collect`进行收集.
 需要注意的是, 虽然`collect`是`Iterator`中定义的方法, 但`Iterator`是特征, `collect`在此处调用的内部实现细节实际由`HashMap<K, V>`提供.
 
-**collect 方法源码分析:**
+##### **collect 方法的调用分析:**
 
 首先看`into_iter`在此处的实现:
 ```rust:no-line-numbers
@@ -67,6 +67,45 @@ impl<T, A: Allocator> IntoIterator for Vec<T, A> {
 ```
 其中`type Item`的实际类型推断为`(String, u32)`, \
 所以`into_iter()`的实际返回值为`IntoIter<(String, u32), A>`. (A=Global, 以下忽略)
+
+然后调用`collect`, `collect`是一个特征方法, 其定义如下: 
+```rust:no-line-numbers
+pub trait Iterator {
+  type Item;
+  fn collect<B: FromIterator<Self::Item>>(self) -> B
+  where
+      Self: Sized,
+  {
+      FromIterator::from_iter(self)
+  }
+}
+```
+其中`FromIterator::from_iter`的定义如下:
+```rust:no-line-numbers
+pub trait FromIterator<A>: Sized {
+  fn from_iter<T: IntoIterator<Item = A>>(iter: T) -> Self; 
+}
+```
+**FromIterator\::from_iter(self)实质为\<Self as FromIterator>::from_iter(self), 
+实际调用哪个具体实现还需要Self的类型信息, 而此处Self类型的推断依据只有返回值类型的上下文, 即泛型B的实际类型. 
+(注意self是iter的实参, 而iter的类型注解是泛型T而非Self, 实际调用哪个实现与其无关).**
+
+由于很多类型都实现了Iterator特征及collect方法, 所以调用代码中显式使用了`HashMap<_, _>`类型注解来明确调用的具体实现类型, 事实上`HashMap<K, V>`也的确实现了该特征:
+```rust:no-line-numbers
+impl<K, V, S> FromIterator<(K, V)> for HashMap<K, V, S>
+where
+    K: Eq + Hash,
+    S: BuildHasher + Default,
+{
+    fn from_iter<T: IntoIterator<Item = (K, V)>>(iter: T) -> HashMap<K, V, S> {
+        let mut map = HashMap::with_hasher(Default::default());
+        map.extend(iter);
+        map
+    }
+}
+```
+而其中泛型的具体类型可由iter的实参类型推导. <br />
+根据前面分析已知, 此处传入iter的实参为IntoIter<(String, u32)>. 
 
 `IntoIter`是一个实现了`Iterator`特征的迭代器:
 ```rust:no-line-numbers
@@ -88,39 +127,35 @@ impl<I: Iterator> IntoIterator for I {
 }
 ```
 
-`collect`是一个特征方法, 其定义如下: 
-```rust:no-line-numbers
-pub trait Iterator {
-  type Item;
-  fn collect<B: FromIterator<Self::Item>>(self) -> B
-  where
-      Self: Sized,
-  {
-      FromIterator::from_iter(self)
-  }
-}
-```
-其中`FromIterator::from_iter`的定义如下:
+所以`T: IntoIterator\<Item = (K, V)>`中的(K, V)推导为(String, u32).
+
+**需要特别注意的是:** \
+如果特征方法没有默认实现, 一般不能直接通过`Trait::methon()`调用.
+(Err: cannot call associated function on trait without specifying the corresponding `impl` type)\
+上述分析中的代码之所以能使用`FromIterator::from_iter(self)`, 是因为其定义
 ```rust:no-line-numbers
 pub trait FromIterator<A>: Sized {
-  // 根据实参可知此处iter实际类型为IntoIter<(String, u32)>
-  // FromIterator::from_iter(self)相当于<具体实例 as FromIterator>::from_iter(self), 实际调用哪个具体实现还需要Self的类型信息, 而Self类型的推断依据是返回值相关上下文, 即泛型B的实际类型. (注意self只是iter的实参, 不依据此进行推断)
   fn from_iter<T: IntoIterator<Item = A>>(iter: T) -> Self; 
 }
 ```
+中返回值是Self. 于是只要明确了实际的返回值类型(HashMap\<_, _>), 就相当于指明了其调用的具体实现类型.\
+举个简单例子:
 
-由于`collect`实际支持生成多种类型的目标集合, 因此我们需要通过类型标注`HashMap<_, _>`来帮助编译器推断其中泛型参数B的实际类型.
-上述定义中泛型B要求实现特征约束`FromIterator<(String, u32)>`, 而`HashMap<K, V>`确实实现了满足该条件的特征:
 ```rust:no-line-numbers
-impl<K, V, S> FromIterator<(K, V)> for HashMap<K, V, S>
-where
-    K: Eq + Hash,
-    S: BuildHasher + Default,
-{
-    fn from_iter<T: IntoIterator<Item = (K, V)>>(iter: T) -> HashMap<K, V, S> {
-        let mut map = HashMap::with_hasher(Default::default());
-        map.extend(iter);
-        map
-    }
+trait Slime {
+  fn produce() -> Self;
 }
+impl Slime for BlueSlime {
+  fn produce() -> Self {	
+    BlueSlime
+  }
+}
+impl Slime for GreenSlime {
+  fn produce() -> Self {	
+    GreenSlime
+  }
+}
+
+let slime = Slime::produce(); // Err: cannot call associated function on trait without specifying the corresponding `impl` type
+let slime: BlueSlime = Slime::produce(); // OK
 ```
