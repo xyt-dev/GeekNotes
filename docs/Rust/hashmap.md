@@ -130,7 +130,7 @@ impl<I: Iterator> IntoIterator for I {
 所以`T: IntoIterator\<Item = (K, V)>`中的(K, V)推导为(String, u32).
 
 **需要特别注意的是:** \
-如果特征方法没有默认实现, 一般不能直接通过`Trait::methon()`调用.
+如果特征方法没有默认实现, 一般不能直接通过`Trait::method()`调用.
 (Err: cannot call associated function on trait without specifying the corresponding `impl` type)\
 上述分析中的代码之所以能使用`FromIterator::from_iter(self)`, 是因为其定义
 ```rust:no-line-numbers
@@ -159,3 +159,39 @@ impl Slime for GreenSlime {
 let slime = Slime::produce(); // Err: cannot call associated function on trait without specifying the corresponding `impl` type
 let slime: BlueSlime = Slime::produce(); // OK
 ```
+
+### 查询和更新 HashMap\<K, V>
+
+HashMap\<K, V>通过`get`方法获取元素(Option<**&V**>)\
+`get`方法定义如下:
+```rust:no-line-numbers
+pub fn get<Q: ?Sized>(&self, k: &Q) -> Option<&V>
+where
+  K: Borrow<Q>,
+  Q: Hash + Eq,
+{
+  self.base.get(k)
+}
+```
+**`K: Borrow<Q>` 表示K必须能够被借用为Q类型**.\
+在之前的例子中, 已知K为String, 而String实现了Borrow\<str>和Borrow\<String>, 即String可以被借用为&str和&String, 所以推出Q可以是str或String, k的实参类型可以是&str或&String.
+
+eg.
+```rust:no-line-numbers
+use std::collections::HashMap;
+
+let mut scores = HashMap::new();
+
+scores.insert(String::from("Blue"), 10 as u32);
+scores.insert(String::from("Yellow"), 50);
+
+let team_name = String::from("Blue");
+let score = scores.get(&team_name); // 自动推断出score的类型为Option<&u32>
+```
+此例中, 如果想获取数值类型的score, 可使用以下方法:
+```rust:no-line-numbers
+let score: u32 = scores.get(&team_name).copied().unwrap_or(0);
+```
+其中的方法: \
+.copied() 将Option\<&u32>转换为Option\<u32>.\
+.unwrap_or(0) 解包Option\<u32>, 如果不存在则返回默认值0, 安全地获取值.

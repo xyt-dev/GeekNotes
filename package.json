@@ -5,7 +5,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "docs:dev": "vuepress-vite dev docs",
+    "docs:dev": "vuepress-vite dev docs --port 3000",
     "docs:build": "vuepress-vite build docs",
     "docs:update-package": "pnpm dlx vp-update"
   },
