@@ -1,1 +1,59 @@
 // you can change colors here
+
+@font-face {
+  font-family: 'vivoSans';
+  src: url('/fonts/vivo%20Sans%20Simplified%20Chinese/vivoSans-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'vivoSans';
+  src: url('/fonts/vivo%20Sans%20Simplified%20Chinese/vivoSans-DemiBold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrainsMono';
+  src: url('/fonts/JetBrainsMono/JetBrainsMono-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrainsMono';
+  src: url('/fonts/JetBrainsMono/JetBrainsMono-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+$vp-font: "vivoSans";
+$vp-font-heading: "vivoSans";
+$vp-font-mono: "JetBrainsMono";
+
+$content-width: 850px;
+
+h2 {
+  font-size: 1.8rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+h4 {
+  font-size: 1.2rem;
+}
+
+div, p {
+  font-size: 1.05rem;
+}
+
+code, .line-number, .vp-toc-header {
+  font-size: 14px;
+}

@@ -12,6 +12,12 @@ export default defineUserConfig({
     ['link', { rel: 'icon', href: '/icons/archlinux.svg' }],
   ], // <head> 标签内插入内容
 
+  markdown: {
+    headers: {
+      level: [2, 3, 4, 5, 6],
+    },
+  },
+
   theme: hopeTheme({
     // 导航栏
     navbar: [

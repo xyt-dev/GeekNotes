@@ -21,10 +21,10 @@ order: 3
     gems.insert("蓝宝石", 2);
     ```
 
-由于HashMap\<T\>没有包含在prelude中, 需手动引入当前作用域:\
+由于HashMap\<K, V\>没有包含在prelude中, 需手动引入当前作用域:\
 `use std::collections::HashMap;`
 
-同Vec一样, 如果预先知道要存储的KV对个数, 可以使用 `HashMap::with_capacity(capacity)` 创建指定大小的 HashMap\<T\>, 以避免频繁的内存分配和数据拷贝迁移, 提升性能.
+同 Vec\<T> 一样, 如果预先知道要存储的 KV 对个数, 可以使用 `HashMap::with_capacity(capacity)` 创建指定大小的 HashMap\<K, V\>, 以避免频繁的内存分配和数据拷贝迁移, 提升性能.
 
 ## Vec\<T> 转换为 HashMap\<K, V>
 
@@ -51,8 +51,8 @@ for team in &teams_list {
 ```rust:no-line-numbers
 let teams_map: HashMap<_, _> = teams_list.into_iter().collect(); // _ 为类型占位符
 ```
-以上代码使用`into_iter`方法将列表转为迭代器, 接着通过`collect`进行收集.
-需要注意的是, 虽然`collect`是`Iterator`中定义的方法, 但`Iterator`是特征, `collect`在此处调用的内部实现细节实际由`HashMap<K, V>`提供.
+以上代码使用 `into_iter` 方法将列表转为迭代器, 接着通过 `collect` 进行收集.\
+需要注意的是, 虽然 `collect` 是 `Iterator` 中定义的方法, 但 `Iterator` 是特征, `collect`在此处调用的内部实现细节实际由 `HashMap<K, V>` 提供.
 
 ### **collect 方法的调用分析:**
 
