@@ -6,7 +6,7 @@
     <div
       v-if="isVisible"
       ref="popupRef"
-      class="absolute top-full p-[0.5rem] pl-[0.8rem] rounded-md shadow-md z-10 whitespace-nowrap text-sm"
+      class="absolute top-full p-[0.5rem] pl-[0.8rem] rounded-md shadow-md z-10 whitespace-nowrap text-base bg-[#f5e0dc] text-[#161624]"
       :style="style"
     >
       <strong>{{ word }}</strong> <br />

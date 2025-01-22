@@ -191,7 +191,7 @@ EngWord.vue实现如下:
     <div
       v-if="isVisible"
       ref="popupRef"
-      class="absolute top-full p-[0.5rem] pl-[0.8rem] rounded-md shadow-md z-10 whitespace-nowrap text-sm"
+      class="absolute top-full p-[0.5rem] pl-[0.8rem] rounded-md shadow-md z-10 whitespace-nowrap text-base bg-[#f5e0dc] text-[#161624]"
       :style="style"
     >
       <strong>{{ word }}</strong> <br />
@@ -309,4 +309,70 @@ export default defineClientConfig({
 <EngWord word="magnificent" highlight="adj 1" content="Magnificent" />
 </div>
 
+### 自定义字体
+
+styles/paletee.scss会被自动编译和引入, 可以在paletee.scss文件中加载和使用字体、微调字体样式:
+
+```scss:no-line-numbers title=".vuepress/styles/paletee.scss"
+@font-face {
+  font-family: 'vivoSans';
+  // %20 表示空格
+  src: url('/fonts/vivo%20Sans%20Simplified%20Chinese/vivoSans-Regular.ttf') format('truetype'); 
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'vivoSans';
+  src: url('/fonts/vivo%20Sans%20Simplified%20Chinese/vivoSans-DemiBold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrainsMono';
+  src: url('/fonts/JetBrainsMono/JetBrainsMono-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrainsMono';
+  src: url('/fonts/JetBrainsMono/JetBrainsMono-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+$vp-font: "vivoSans";
+$vp-font-heading: "vivoSans";
+$vp-font-mono: "JetBrainsMono";
+
+$content-width: 850px;
+
+h2 {
+  font-size: 1.75rem;
+}
+
+h3 {
+  font-size: 1.4rem;
+}
+
+h4 {
+  font-size: 1.2rem;
+}
+
+div, p {
+  font-size: 1.05rem;
+}
+
+code, .line-number, .vp-toc-header {
+  font-size: 14px;
+}
+```
+
 <div class="h-[3rem]" />
+

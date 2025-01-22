@@ -2,6 +2,7 @@
 
 @font-face {
   font-family: 'vivoSans';
+  // %20 表示空格
   src: url('/fonts/vivo%20Sans%20Simplified%20Chinese/vivoSans-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
@@ -39,11 +40,11 @@ $vp-font-mono: "JetBrainsMono";
 $content-width: 850px;
 
 h2 {
-  font-size: 1.8rem;
+  font-size: 1.75rem;
 }
 
 h3 {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
 }
 
 h4 {
