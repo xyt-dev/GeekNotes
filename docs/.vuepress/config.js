@@ -8,7 +8,9 @@ export default defineUserConfig({
   bundler: viteBundler(),
   title: "GeekNotes",
   base: "/", // 部署站点的根目录路径
-  head: [['link', { rel: 'icon', href: '/icons/archlinux.svg' }]], // <head> 标签内插入内容
+  head: [
+    ['link', { rel: 'icon', href: '/icons/archlinux.svg' }],
+  ], // <head> 标签内插入内容
 
   theme: hopeTheme({
     // 导航栏

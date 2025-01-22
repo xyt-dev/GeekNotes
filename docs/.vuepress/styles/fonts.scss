@@ -1,0 +1,43 @@
+@font-face {
+  font-family: 'vivoSans';
+  src: url('/fonts/vivo%20Sans%20Simplified%20Chinese/vivoSans-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'vivoSans';
+  src: url('/fonts/vivo%20Sans%20Simplified%20Chinese/vivoSans-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrainsMono';
+  src: url('/fonts/JetBrainsMono/JetBrainsMono-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'JetBrainsMono';
+  src: url('/fonts/JetBrainsMono/JetBrainsMono-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+
+
+// 应用字体
+div, h1, h2, h3, h4, h5, h6 {
+  font-family: 'vivoSans';
+}
+
+code, pre, kbd {
+  font-family: 'JetBrainsMono';
+}

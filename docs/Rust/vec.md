@@ -45,7 +45,7 @@ pub trait Index<T> {
 
 ### Vec遍历
 
-Vec\<T\>实现了IntoIterator Trait, 实现了IntoIterator特征的类型在使用for in语句时会自动调用into_iter().
+Vec\<T\>实现了`IntoIterator Trait`, 实现了IntoIterator特征的类型在使用for in语句时会自动调用into_iter().
 Vec\<T\> 在通过Iterator.next()迭代时每次访问都会触发数组边界检查, 更加安全高效. \
 eg:
 ```rust:no-line-numbers
