@@ -7,7 +7,7 @@ order: 2
 
 ## WezTerm 配置
 
-### .config/wezterm/wezterm.lua
+### ~/.config/wezterm/wezterm.lua
 
 ```lua:no-line-numbers
 local wezterm = require("wezterm")
@@ -36,6 +36,33 @@ local config = {
 }
 
 return config
+```
+
+## Kitty 配置
+
+### ~/.config/kitty/kitty.conf
+
+```shell
+# BEGIN_KITTY_THEME
+# Catppuccin-Mocha
+include current-theme.conf
+# END_KITTY_THEME
+
+font_size 16
+font_family JetBrainsMono Nerd Font
+background_opacity 0.7
+
+# # 复制
+# map ctrl+c copy_to_clipboard
+#
+# # 粘贴
+# map ctrl+v paste_from_clipboard
+
+# 光标轨迹
+cursor_trail 1
+cursor_trail_decay 0.01 0.2
+# 游标跟踪启动阈值
+cursor_trail_start_threshold 0
 ```
 
 ## zsh theme (使用 [Starship](https://starship.rs))
