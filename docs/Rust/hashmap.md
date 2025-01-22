@@ -200,4 +200,53 @@ let score: u32 = scores.get(&team_name).copied().unwrap_or(0);
 
 ### 遍历元素
 
-#### 哈哈haha
+eg:
+```rust:no-line-numbers
+use std::collections::HashMap;
+let mut scores = HashMap::new();
+scores.insert(String::from("Blue"), 10);
+scores.insert(String::from("Yellow"), 50);
+for (key, value) in &scores {
+    println!("{}: {}", key, value);
+}
+```
+
+[与Vec\<T>的遍历原理相同](./vec.md#vec遍历) \
+示例中执行 for in 语句时会隐式调用 `&scores.into_iter()`, 其返回一个遍历元素为 `(&K, &V)` 的迭代器, 然后使用该迭代器进行遍历.
+
+**scores.into_iter()会消耗原集合scores(move集合的所有权); &scores.into_iter()和&mut scores.into_iter()不会消耗原集合(实际调用的是iter()), 但二者返回的迭代器类型不同(见[Vec\<T>的遍历](./vec.md#vec遍历)).** \
+**以上三种情况into_iter()的具体实现如下:**
+
+```rust:no-line-numbers
+impl<K, V> IntoIterator for HashMap<K, V> {
+    type Item = (K, V);
+    type IntoIter = IntoIter<K, V>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        // 消耗 self，返回一个产生 (K, V) 的迭代器
+        self.base.into_iter()
+    }
+}
+
+impl<'a, K, V> IntoIterator for &'a HashMap<K, V> {
+    type Item = (&'a K, &'a V);
+    type IntoIter = Iter<'a, K, V>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        // 返回一个产生 (&K, &V) 的迭代器
+        self.iter()
+    }
+}
+
+impl<'a, K, V> IntoIterator for &'a mut HashMap<K, V> {
+    type Item = (&'a K, &'a mut V);
+    type IntoIter = IterMut<'a, K, V>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        // 返回一个产生 (&K, &mut V) 的迭代器
+        self.iter_mut()
+    }
+}
+```
+理解三种实现之间的区别.
+
