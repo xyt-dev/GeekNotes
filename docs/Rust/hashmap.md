@@ -3,7 +3,7 @@ title: HashMap<K, V>
 order: 3
 ---
 
-### 创建HashMap\<K, V\>
+## 创建HashMap\<K, V\>
 
 1. 显示指明类型
     ```rust:no-line-numbers
@@ -21,11 +21,12 @@ order: 3
     gems.insert("蓝宝石", 2);
     ```
 
-由于HashMap\<T\>没有包含在prelude中, 需手动引入当前作用域: `use std::collections::HashMap;`
+由于HashMap\<T\>没有包含在prelude中, 需手动引入当前作用域:\
+`use std::collections::HashMap;`
 
 同Vec一样, 如果预先知道要存储的KV对个数, 可以使用 `HashMap::with_capacity(capacity)` 创建指定大小的 HashMap\<T\>, 以避免频繁的内存分配和数据拷贝迁移, 提升性能.
 
-### Vec\<T> 转换为 HashMap\<K, V>
+## Vec\<T> 转换为 HashMap\<K, V>
 
 Eg:
 ```rust:no-line-numbers
@@ -36,7 +37,7 @@ let teams_list = vec![ // Vec<(String, u32)>
   ("英国队".to_string(), 50),
 ];
 ```
-#### 方案一: 逐个遍历Vec\<T>元素, 使用.insert()插入HashMap\<K, V>
+### 方案一: 逐个遍历Vec\<T>元素, 使用.insert()插入HashMap\<K, V>
 
 ```rust:no-line-numbers
 let mut teams_map = HashMap::new();
@@ -45,7 +46,7 @@ for team in &teams_list {
 }
 ```
 
-#### 方案二: 使用特征方法Iterator::collect()自动收集
+### 方案二: 使用特征方法Iterator::collect()自动收集
 
 ```rust:no-line-numbers
 let teams_map: HashMap<_, _> = teams_list.into_iter().collect(); // _ 为类型占位符
@@ -53,7 +54,7 @@ let teams_map: HashMap<_, _> = teams_list.into_iter().collect(); // _ 为类型�
 以上代码使用`into_iter`方法将列表转为迭代器, 接着通过`collect`进行收集.
 需要注意的是, 虽然`collect`是`Iterator`中定义的方法, 但`Iterator`是特征, `collect`在此处调用的内部实现细节实际由`HashMap<K, V>`提供.
 
-##### **collect 方法的调用分析:**
+### **collect 方法的调用分析:**
 
 首先看`into_iter`在此处的实现:
 ```rust:no-line-numbers
@@ -115,7 +116,7 @@ impl<T, A: Allocator> Iterator for IntoIter<T, A> {
 }
 ```
 
-在`IntoIterator`特征的定义文件中, 自动为所有实现了`Iterator`特征的类型实现了`IntoIterator`特征:
+在`IntoIterator`特征的定义文件中, 所有实现了`Iterator`特征的类型自动实现了`IntoIterator`特征:
 ```rust:no-line-numbers
 // 特征的条件实现
 impl<I: Iterator> IntoIterator for I {
@@ -160,9 +161,9 @@ let slime = Slime::produce(); // Err: cannot call associated function on trait w
 let slime: BlueSlime = Slime::produce(); // OK
 ```
 
-### 查询、遍历和更新 HashMap\<K, V>
+## 查询、遍历和更新 HashMap\<K, V>
 
-#### 查询元素
+### 查询元素
 
 HashMap\<K, V>通过`get`方法获取元素(Option<**&V**>)\
 `get`方法定义如下:
@@ -197,5 +198,6 @@ let score: u32 = scores.get(&team_name).copied().unwrap_or(0);
 .copied() 将Option\<&u32>转换为Option\<u32>.\
 .unwrap_or(0) 解包Option\<u32>, 如果不存在则返回默认值0, 安全地获取值.
 
-#### 遍历元素
+### 遍历元素
 
+#### 哈哈haha

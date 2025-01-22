@@ -3,7 +3,7 @@ title: Vec<T>
 order: 2
 ---
 
-### 创建Vec\<T\>
+## 创建Vec\<T\>
 
 1. 显示指明类型
     ```rust:no-line-numbers
@@ -21,7 +21,7 @@ order: 2
     ```
 使用 `vec![]` 宏创建Vec\<T\>同理, 但可以同时赋初值.
 
-### 下标索引与.get()方法
+## 下标索引与.get()方法
 
 Vec\<T\> 的下标索引是通过 Trait Index\<T\> 重载'[ ]'运算符来实现的. \
 Trait Index 定义:
@@ -43,7 +43,7 @@ pub trait Index<T> {
 >
 > 此外, 泛型T默认也为Sized, 如果要说明其为动态大小类型, 需显式声明 ?Sized 特征约束.
 
-### Vec遍历
+## Vec遍历
 
 Vec\<T\>实现了`IntoIterator Trait`, 实现了IntoIterator特征的类型在使用for in语句时会自动调用into_iter().
 Vec\<T\> 在通过Iterator.next()迭代时每次访问都会触发数组边界检查, 更加安全高效. \
@@ -57,7 +57,7 @@ for i in &mut v { // 修改元素需要 mut
 > **注意: Trait对于类型T, &T, &mut T的实现是完全独立的; 这里&Vec\<T\>和&mut Vec\<T\>调用into_iter()返回的iterator实例类型不同(返回的分别是std\::slice\::Iter\<T\>和std\::slice\::IterMut\<T\>类型).**
 
 
-### 通过Wrapper给外部类型实现外部Trait
+## 通过Wrapper给外部类型实现外部Trait
 
 以Vec\<String\>为例:
 ```rust:no-line-numbers
@@ -96,7 +96,7 @@ fn main() {
 > 3. 如果解引用无法找到方法, 编译器会尝试引用(通过&或&mut), 此过程此过程不断进行直到找到对应方法或无法继续引用
 
 
-### Vec\<T\>的标准库定义
+## Vec\<T\>的标准库定义
 
   ```rust:no-line-numbers
   pub struct Vec<T, A: Allocator = Global> { // <参数: 约束 = 默认值>
@@ -115,9 +115,9 @@ fn main() {
   > }
   > ```
 
-### 存储不同类型的元素
+## 存储不同类型的元素
 
-#### 方案一: 使用枚举类型
+### 方案一: 使用枚举类型
 
 eg:
 ```rust:no-line-numbers
@@ -140,7 +140,7 @@ fn show_addr(ip: IpAddr) {
 }
 ```
 
-#### 方案二: 使用dyn Trait
+### 方案二: 使用dyn Trait
 
 eg:
 ```rust:no-line-numbers
@@ -188,7 +188,7 @@ fn main() {
 >
 > Box\::\<T\>\::new(T)获取一个变量的所有权, 将其栈上的数据逐字节拷贝到堆上, 同时拥有该片堆内存的所有权(非Copy类型变量原栈上的内存释放掉); 变量的引用字段引用的数据不会拷贝, 如果其中引用指向的是栈上的数据，必须确保引用的生命周期足够长.
 
-### Vector 常用方法
+## Vector 常用方法
 
 ```rust:no-line-numbers
 let mut v = Vec::with_capacity(10); // 以指定的capacity初始化
@@ -221,7 +221,7 @@ let slice = &v[1..=3];          // 可以像数组切片的方式获取 vec 的�
 assert_eq!(slice, &[22, 33, 44]);
 ```
 
-#### 排序
+### 排序
 
 Vec\<T\>实现了两种排序算法, 分别为稳定的排序sort和sort_by, 以及非稳定排序sort_unstable和sort_unstable_by.
 总体而言，非稳定排序的算法的速度会优于稳定排序算法，同时，稳定排序还会额外分配原数组一半的空间. \
@@ -233,7 +233,7 @@ assert_eq!(v, vec![1, 2, 5, 10, 15]);
 ```
 
 T为浮点数时的排序: \
-在浮点数当中, 存在一个NAN的值, 这个值无法与其他的浮点数进行对比, 因此浮点数类型并没有实现全数值可比较的Trait Ord(返回值为 `Ordering` ), 而是实现了部分可比较的Trait PartialOrd(返回值为 `Option<Ordering>` ).
+在浮点数当中, 存在一个NAN的值, 这个值无法与其他的浮点数进行对比, 因此浮点数类型并没有实现全数值可比较的 Trait Ord (返回值为 `Ordering` ), 而是实现了部分可比较的 Trait PartialOrd (返回值为 `Option<Ordering>` ).
 但如果确定不包含NAN值, 就可以使用partial_cmp来作为大小判断的依据:
 
 ```rust:no-line-numbers
