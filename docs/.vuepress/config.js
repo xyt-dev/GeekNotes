@@ -13,7 +13,8 @@ export default defineUserConfig({
   theme: hopeTheme({
     // 导航栏
     navbar: [
-
+      { text: "Home", link: "/" },
+      { text: "Config", link: "/Config/" },
     ],
 
     // 侧边栏

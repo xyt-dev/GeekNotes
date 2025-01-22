@@ -160,7 +160,9 @@ let slime = Slime::produce(); // Err: cannot call associated function on trait w
 let slime: BlueSlime = Slime::produce(); // OK
 ```
 
-### 查询和更新 HashMap\<K, V>
+### 查询、遍历和更新 HashMap\<K, V>
+
+#### 查询元素
 
 HashMap\<K, V>通过`get`方法获取元素(Option<**&V**>)\
 `get`方法定义如下:
@@ -174,8 +176,7 @@ where
 }
 ```
 **`K: Borrow<Q>` 表示K必须能够被借用为Q类型**.\
-在之前的例子中, 已知K为String, 而String实现了Borrow\<str>和Borrow\<String>, 即String可以被借用为&str和&String, 所以推出Q可以是str或String, k的实参类型可以是&str或&String.
-
+在之前的例子中, 已知K为String, 而String实现了Borrow\<str>和Borrow\<String>, 即String可以被借用为&str和&String, 所以推出Q可以是str或String, k的实参类型可以是&str或&String.\
 eg.
 ```rust:no-line-numbers
 use std::collections::HashMap;
@@ -195,3 +196,6 @@ let score: u32 = scores.get(&team_name).copied().unwrap_or(0);
 其中的方法: \
 .copied() 将Option\<&u32>转换为Option\<u32>.\
 .unwrap_or(0) 解包Option\<u32>, 如果不存在则返回默认值0, 安全地获取值.
+
+#### 遍历元素
+

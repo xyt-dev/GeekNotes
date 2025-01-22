@@ -10,4 +10,13 @@ export const sidebarConfig = sidebar({
       children: "structure",
     },
   ],
+  "/Config/": [
+    {
+      text: "Config",
+      prefix: "",
+      link: false,
+      // collapsible: true,
+      children: "structure",
+    },
+  ]
 });
