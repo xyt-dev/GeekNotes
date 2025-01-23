@@ -118,8 +118,7 @@ impl<T, A: Allocator> Iterator for IntoIter<T, A> {
 
 在`IntoIterator`特征的定义文件中, 所有实现了`Iterator`特征的类型自动实现了`IntoIterator`特征:
 ```rust:no-line-numbers
-// 特征的条件实现
-impl<I: Iterator> IntoIterator for I {
+impl<I: Iterator> IntoIterator for I { // 特征的条件实现
     type Item = I::Item;
     type IntoIter = I;
     fn into_iter(self) -> I {
@@ -218,10 +217,15 @@ for (key, value) in &scores {
 **以上三种情况into_iter()的具体实现如下:**
 
 ```rust:no-line-numbers
+pub trait IntoIterator {
+    type Item;
+    type IntoIter: Iterator<Item = Self::Item>;
+    fn into_iter(self) -> Self::IntoIter;
+}
+
 impl<K, V> IntoIterator for HashMap<K, V> {
     type Item = (K, V);
     type IntoIter = IntoIter<K, V>;
-
     fn into_iter(self) -> Self::IntoIter {
         // 消耗 self，返回一个产生 (K, V) 的迭代器
         self.base.into_iter()
@@ -231,7 +235,6 @@ impl<K, V> IntoIterator for HashMap<K, V> {
 impl<'a, K, V> IntoIterator for &'a HashMap<K, V> {
     type Item = (&'a K, &'a V);
     type IntoIter = Iter<'a, K, V>;
-
     fn into_iter(self) -> Self::IntoIter {
         // 返回一个产生 (&K, &V) 的迭代器
         self.iter()
@@ -241,7 +244,6 @@ impl<'a, K, V> IntoIterator for &'a HashMap<K, V> {
 impl<'a, K, V> IntoIterator for &'a mut HashMap<K, V> {
     type Item = (&'a K, &'a mut V);
     type IntoIter = IterMut<'a, K, V>;
-
     fn into_iter(self) -> Self::IntoIter {
         // 返回一个产生 (&K, &mut V) 的迭代器
         self.iter_mut()
@@ -250,3 +252,75 @@ impl<'a, K, V> IntoIterator for &'a mut HashMap<K, V> {
 ```
 理解三种实现之间的区别.
 
+### 更新元素
+
+eg:
+```rust:no-line-numbers
+let mut scores = HashMap::new();
+scores.insert("Blue", 10);
+// 覆盖已有的值
+let old = scores.insert("Blue", 20);
+assert_eq!(old, Some(10));
+// 查询新插入的值
+let new = scores.get("Blue");
+assert_eq!(new, Some(&20));
+// 查询Yellow对应的值，若不存在则插入新值
+let v = scores.entry("Yellow").or_insert(5);
+assert_eq!(*v, 5); // 不存在，插入5
+// 查询Yellow对应的值，若不存在则插入新值
+let v = scores.entry("Yellow").or_insert(50);
+assert_eq!(*v, 5); // 已经存在，因此50没有插入
+
+let text = "hello world wonderful world";
+let mut map = HashMap::new();
+// 根据空格来切分字符串, 统计单词出现次数
+for word in text.split_whitespace() {
+    let count = map.entry(word).or_insert(0);
+    *count += 1;
+}
+```
+
+以上方法的定义:
+
+```rust:no-line-numbers
+impl<K, V> HashMap<K, V, RandomState> { 
+  pub fn new() -> HashMap<K, V, RandomState> {
+    Default::default() // 相当于 <Self as Default>::default()
+  }
+
+  pub fn insert(&mut self, k: K, v: V) -> Option<V> {
+    self.base.insert(k, v)
+  }
+
+  pub fn get<Q: ?Sized>(&self, k: &Q) -> Option<&V>
+  where
+    K: Borrow<Q>, // 分析见上文 "#查询元素"
+    Q: Hash + Eq,
+  {
+    self.base.get(k)
+  }
+
+  pub fn entry(&mut self, key: K) -> Entry<'_, K, V> {
+    map_entry(self.base.rustc_entry(key))
+    // key存在返回 Entry::Occupied(OccupiedEntry<'a, K, V>)
+    // key不存在返回 Entry::Vacant(VacantEntry<'a, K, V>)
+  }
+}
+
+pub enum Entry<'a, K: 'a, V: 'a> {
+  Occupied(OccupiedEntry<'a, K, V>),
+  Vacant(VacantEntry<'a, K, V>),
+}
+
+impl<'a, K, V> Entry<'a, K, V> {
+  pub fn or_insert(self, default: V) -> &'a mut V {
+    match self {
+      Occupied(entry) => entry.into_mut(),
+      Vacant(entry) => entry.insert(default),
+    }
+  }
+}
+```
+`or_insert` 方法返回了 `&mut V` 引用，因此可以通过该可变引用直接修改 map 中对应的值.
+
+HashMap中Key的映射基于哈希, RandomState是Rust默认哈希算法的状态管理器, 为每个HashMap实例生成一个随机种子.
