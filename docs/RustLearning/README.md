@@ -1,4 +1,4 @@
 ---
-title: Rust
+title: RustLearning
 index: false
 ---
