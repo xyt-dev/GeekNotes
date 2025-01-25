@@ -65,6 +65,6 @@ services:
 5. <strong>远程缺失lfs文件可以使用`git lfs push --all origin`强制将本地仓库中的lfs文件推送到远程仓库. </strong><br /> 
 6. 在app.ini中通过以下修改允许上传头像的最大大小: 
     ```ini:no-line-numbers
-    [server]
-    MAX_AVATAR_SIZE = 10485760 # 10MB
+    [picture]
+    AVATAR_MAX_FILE_SIZE = 10485760 # 10MB
     ```
