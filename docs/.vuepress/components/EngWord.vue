@@ -1,12 +1,12 @@
 <template>
-  <span class="absolute" @click="setVisibility">
+  <span class="relative" @click="setVisibility">
     <span class="cursor-pointer text-blue-400" ref="parentRef">
       {{ content }}<slot></slot> <!-- 两种方式接收内容 -->
     </span>
     <div
       v-if="isVisible"
       ref="popupRef"
-      class="absolute top-full p-[0.5rem] pl-[0.8rem] rounded-md shadow-md z-10 whitespace-nowrap text-base bg-[#f5e0dc] text-[#161624]"
+      class="inline-block absolute top-full p-[0.5rem] pl-[0.8rem] rounded-md shadow-md z-10 whitespace-nowrap text-base bg-[#f5e0dc] text-[#161624]"
       :style="style"
     >
       <strong>{{ word }}</strong> <br />

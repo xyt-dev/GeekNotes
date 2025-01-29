@@ -23,7 +23,14 @@ export default defineUserConfig({
     navbar: [
       { text: "Home", link: "/" },
       { text: "Config", link: "/Config/" },
+      { text: "收藏夹", link: "/Bookmarks/" },
     ],
+
+    markdown: {
+      footnote: true,
+      sup: true,
+      sub: true,
+    },
 
     // 侧边栏
     sidebar: sidebarConfig,
