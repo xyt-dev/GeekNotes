@@ -104,6 +104,8 @@ clangd, rust-analyzer, Even Better TOML, Markdown All in One, Lua, Python, Langu
   "errorLens.enabledDiagnosticLevels": [
       "error"
   ],
+  "extensions.ignoreRecommendations": true,
+  "editor.mouseWheelScrollSensitivity": 5, // 滚轮速度
   "typescript.updateImportsOnFileMove.enabled": "always",
   // projects manager
   "projectManager.git.baseFolders": [

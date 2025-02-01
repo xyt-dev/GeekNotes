@@ -225,6 +225,7 @@ Env.sh:
 alias reload="hyprctl reload"
 alias vim="nvim" # yay -S neovim
 alias rm="trash" # yay -S trash-cli
+alias mv="mv -n" # 防止 mv 覆盖文件
 alias ls="lsd" # yay -S lsd
 alias find="fd" # yay -S fd
 alias yt="yt-dlp" # yay -S yt-dlp
