@@ -589,7 +589,7 @@ mainbox {
 imagebox {
     padding:                     20px;
     background-color:            transparent;
-    background-image:            url("~/.config/rofi/images/rofibg.png", width);
+    background-image:            url("path/to/rofibg.png", width); /* 背景图片 */
     orientation:                 vertical;
     children:                    [ "inputbar", "dummy", "mode-switcher" ];
 }
@@ -737,3 +737,12 @@ error-message {
     text-color:                  @foreground;
 }
 ```
+
+## 其他
+
+### firefox(zen browser) 设置
+
+打开url栏输入: `about:config` 进入高级设置.
+
+例如要设置在新标签页中打开网页: \
+设置 `browser.urlbar.openintab = true` 即可.
