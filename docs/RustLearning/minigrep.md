@@ -5,7 +5,9 @@ order: 4
 
 # minigrep
 
-## main.rs
+## minigrep v1.0
+
+### main.rs
 
 ```rust:no-line-numbers
 use std::{env, process};
@@ -33,7 +35,7 @@ fn main() {
 }
 ```
 
-## lib.rs
+### lib.rs
 
 ```rust:no-line-numbers
 use std::{env, error::Error, fs};
@@ -136,6 +138,146 @@ Trust me.";
 
     assert_eq!(
       vec!["Rust:", "Trust me."],
+      search_case_insensitive(query, content)
+    );
+  }
+}
+```
+
+
+## minigrep v2.0
+
+### main.rs
+
+```rust:no-line-numbers
+use std::{env, process};
+
+use minigrep::Config;
+
+fn main() {
+  let config = Config::build(env::args()).unwrap_or_else(|err| {
+    // 将错误信息输出到 stderr 使用 eprintln!()
+    eprintln!("Problem parsing arguments: {err}.");
+    process::exit(1);
+  });
+
+  println!("================================================");
+  println!("Query: \"{}\"", config.query);
+  println!("Searching in file: \"{}\"", config.file_path);
+  println!("Case sensitivity: {}", config.ignore_case);
+  println!("================================================\n");
+
+  if let Err(e) = minigrep::run(config) {
+    eprintln!("Application err: {e}");
+    process::exit(1);
+  }
+}
+```
+
+### lib.rs
+
+```rust:no-line-numbers
+use std::{env, error::Error, fs};
+
+pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
+  /* deepseek: 为了让 OtherError 能够通过 ? 自动转换为 Box<dyn Error>, 
+  OtherError 需要实现 std::error::Error trait 从而能够被 dyn Error 变量绑定, 
+  而且 Rust 标准库已经为所有实现了 Error 的类型提供了 From 实现，以将其转换为 Box<dyn Error> 
+  即 from() 可将 OtherError 直接转换为 Box<dyn Error> */
+  let content = fs::read_to_string(config.file_path)?;
+
+  let results = if config.ignore_case {
+    search_case_insensitive(&config.query, &content)
+  } else {
+    search(&config.query, &content)
+  };
+  for line in results {
+    println!("{line}");
+  }
+  Ok(())
+}
+
+pub struct Config {
+  pub query: String,
+  pub file_path: String,
+  pub ignore_case: bool,
+}
+
+impl Config {
+  pub fn build(mut args: impl Iterator<Item = String>) -> Result<Config, &'static str> {
+    args.next(); // 跳过第一个参数, 即程序名称
+    let query = match args.next() {
+      Some(arg) => arg,
+      None => return Err("Didn't get a query string."),
+    };
+    let file_path = match args.next() {
+      Some(arg) => arg,
+      None => return Err("Didn't get a file path."),
+    };
+    let ignore_case = env::var("IGNORE_CASE").is_ok();
+    Ok(Config {
+      query,
+      file_path,
+      ignore_case,
+    })
+  }
+}
+
+pub fn search(query: &str, content: &str) -> Vec<String> {
+  let red_color = "\x1b[31m";
+  let reset_color = "\x1b[0m";
+
+  content
+    .lines()
+    .filter(|line| line.contains(query))
+    .map(|line| line.replace(query, &format!("{}{}{}", red_color, query, reset_color)))
+    .collect()
+}
+
+pub fn search_case_insensitive(query: &str, content: &str) -> Vec<String> {
+  let red_color = "\x1b[31m";
+  let reset_color = "\x1b[0m";
+  let query_lowercase = query.to_lowercase();
+
+  content
+    .lines()
+    .filter(|line| line.to_lowercase().contains(&query_lowercase))
+    .map(|line| {
+      let match_start = line.to_lowercase().find(&query_lowercase).unwrap(); // find 一定返回 Some
+      let match_end = match_start + query.len();
+      let matched_part = &line[match_start..match_end];
+      line.replace(matched_part, &format!("{}{}{}", red_color, matched_part, reset_color))
+    })
+    .collect()
+}
+
+// TEST
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn case_sensitive() {
+    let query = "duct";
+    let content = "\
+Rust:
+safe, fast, productive.
+Pick three.";
+
+    assert_eq!(vec![String::from("safe, fast, pro\x1b[31mduct\x1b[0mive.")], search(query, content));
+  }
+
+  #[test]
+  fn case_insensitive() {
+    let query = "rUsT";
+    let content = "\
+Rust:
+safe, fast, productive.
+Pick three.
+Trust me.";
+
+    assert_eq!(
+      vec![String::from("\x1b[31mRust\x1b[0m:"), String::from("T\x1b[31mrust\x1b[0m me.")],
       search_case_insensitive(query, content)
     );
   }
