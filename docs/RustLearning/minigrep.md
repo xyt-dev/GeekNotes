@@ -156,7 +156,6 @@ use minigrep::Config;
 
 fn main() {
   let config = Config::build(env::args()).unwrap_or_else(|err| {
-    // 将错误信息输出到 stderr 使用 eprintln!()
     eprintln!("Problem parsing arguments: {err}.");
     process::exit(1);
   });
@@ -180,10 +179,6 @@ fn main() {
 use std::{env, error::Error, fs};
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
-  /* deepseek: 为了让 OtherError 能够通过 ? 自动转换为 Box<dyn Error>, 
-  OtherError 需要实现 std::error::Error trait 从而能够被 dyn Error 变量绑定, 
-  而且 Rust 标准库已经为所有实现了 Error 的类型提供了 From 实现，以将其转换为 Box<dyn Error> 
-  即 from() 可将 OtherError 直接转换为 Box<dyn Error> */
   let content = fs::read_to_string(config.file_path)?;
 
   let results = if config.ignore_case {
@@ -243,10 +238,26 @@ pub fn search_case_insensitive(query: &str, content: &str) -> Vec<String> {
     .lines()
     .filter(|line| line.to_lowercase().contains(&query_lowercase))
     .map(|line| {
-      let match_start = line.to_lowercase().find(&query_lowercase).unwrap(); // find 一定返回 Some
-      let match_end = match_start + query.len();
-      let matched_part = &line[match_start..match_end];
-      line.replace(matched_part, &format!("{}{}{}", red_color, matched_part, reset_color))
+      let mut highlighted_line = String::new();
+      let mut last_end = 0;
+      let line_lowercase = line.to_lowercase();
+
+      // 查找所有匹配位置
+      for (start, _) in line_lowercase.match_indices(&query_lowercase) {
+        let end = start + query.len();
+
+        // 非匹配前缀部分
+        highlighted_line.push_str(&line[last_end..start]);
+        // 高亮匹配部分
+        highlighted_line.push_str(red_color);
+        highlighted_line.push_str(&line[start..end]);
+        highlighted_line.push_str(reset_color);
+        
+        last_end = end;
+      }
+      // 非匹配后缀部分
+      highlighted_line.push_str(&line[last_end..]);
+      highlighted_line
     })
     .collect()
 }
@@ -271,13 +282,13 @@ Pick three.";
   fn case_insensitive() {
     let query = "rUsT";
     let content = "\
-Rust:
+Rustrrrrrrrrrrust:
 safe, fast, productive.
 Pick three.
 Trust me.";
 
     assert_eq!(
-      vec![String::from("\x1b[31mRust\x1b[0m:"), String::from("T\x1b[31mrust\x1b[0m me.")],
+      vec![String::from("\x1b[31mRust\x1b[0mrrrrrrrrr\x1b[31mrust\x1b[0m:"), String::from("T\x1b[31mrust\x1b[0m me.")],
       search_case_insensitive(query, content)
     );
   }
