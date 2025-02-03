@@ -109,4 +109,57 @@ impl GeneratedClosure {
   closure(); // ok
   // println!("{}", s); // Err: borrow of moved value: `s`. 因为 s 的所有权已经被移动到闭包中.
   ```
-**总之, 闭包对变量的捕获方式与其实现的特性类型没有直接关系, 二者均由被捕获变量的实际使用方式决定.**
+
+**总之, 闭包对变量的捕获方式与其实现的特性类型没有直接决定关系, 二者均由被捕获变量的实际使用方式决定.**
+
+### 返回闭包
+
+- 由于不知道闭包具体类型, 而`Fn(u32) -> u32`是一个特征, 编译器报错: 
+  ```
+  fn factory<T>() -> Fn(u32) -> u32 {
+    |                ^^^^^^^^^^^^^^ doesn't have a size known at compile-time
+  ```
+
+- 不能返回不同的闭包类型:
+  ```rust:no-line-numbers
+  fn factory(x:u32) -> impl Fn(u32) -> u32 {
+      let num = 5;
+      if x > 1 {
+          move |x| x + num
+      } else {
+          move |x| x - num
+      }
+  }
+  ```
+  ```
+  error[E0308]: `if` and `else` have incompatible types
+    |
+    | /     if x > 1{
+    | |         move |x| x + num
+    | |         ---------------- expected because of this
+    | |     } else {
+    | |         move |x| x - num
+    | |         ^^^^^^^^^^^^^^^^ expected closure, found a different closure
+    | |     }
+    | |_____- `if` and `else` have incompatible types
+    |
+  ```
+
+- 最好的方法:
+  ```rust:no-line-numbers
+  fn factory(x:u32) -> Box<dyn Fn(u32) -> u32> {
+      let num = 5;
+      if x > 1 {
+          Box::new(move |x| x + num)
+      } else {
+          Box::new(move |x| x - num)
+      }
+  }
+  ```
+
+### 借用周期问题
+
+Rust中函数只要不返回引用(或包含引用的)类型, 就无需显式标注借用周期. \
+普通(且安全)的函数返回的引用只可能来自其参数(以及全局static变量), 之所以需要标注借用周期, 是因为函数内逻辑可能十分复杂且不确定, 无法在编译期判断返回引用的借用周期来自哪个参数. \
+但对于闭包来说, 其返回的引用既可能来自其参数又可能来自其所在环境, 而且闭包不支持显式标注借用周期, 解决该问题较麻烦, 所以一般不要让闭包返回引用类型.
+
