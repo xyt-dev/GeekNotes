@@ -50,9 +50,9 @@ impl GeneratedClosure {
 
 ### 变量捕获
 
-闭包能够捕获其作用域中的变量, **且只有实际使用到的变量才会被捕获**. 具体捕获方式(不可变引用、可变引用或所有权)**取决于闭包内部的实现(对捕获变量的使用方式), 而非闭包变量本身的类型**, 除非使用move关键字才会强制使用 所有权捕获方式 捕获所有使用到的变量.
+闭包能够捕获其作用域中的变量, **且只有实际使用到的变量才会被捕获**. 具体捕获方式(不可变引用、可变引用或所有权)**取决于闭包内部的实现(对捕获变量的使用方式), 而非闭包变量本身的类型**, 除非使用move关键字才会强制使用 所有权捕获方式 捕获所有**实际使用到的**变量.
 
-eg:
+**eg:**
 - 不可变引用捕获:
   ```rust:no-line-numbers
   fn fn_once<F>(func: F)
@@ -87,23 +87,21 @@ eg:
   };
   closure(); // Err: cannot mutate immutable variable `closure`
   ```
-  则会由于closure为不可变变量, 无法调用方法 `call_mut(&mut self, args: Args)`
+  则会由于closure为不可变变量, 而无法调用方法 `call_mut(&mut self, args: Args)`
 
 - 所有权捕获
   ```rust:no-line-numbers
-  fn main() {
-    let s = String::from("hello");
-    // 闭包内部移动了 s, closure 的类型推断为 impl FnOnce()
-    let closure = || {
-      let owned_s = s; // 将 s 移动到闭包内部
-    };
-    // println!("{}", s); // Err: borrow of moved value: `s`. 因为 s 的所有权已经被移动到闭包中.
-  }
+  let s = String::from("hello");
+  // 闭包内部移动了 s, closure 的类型推断为 impl FnOnce()
+  let closure = || {
+    let owned_s = s; // 将 s 移动到闭包内部
+  };
+  // println!("{}", s); // Err: borrow of moved value: `s`. 因为 s 的所有权已经被移动到闭包中.
   ```
   **注意, 使用move不会因此使闭包的类型被推断为**`impl FnOnce`, **只有当闭包的调用函数中实际消耗(移动)了变量的所有权时才会推断为**`impl FnOnce`.
   ```rust:no-line-numbers
   let s = String::from("hello");
-  let closure = move || { // ! closure 的类型推断为 impl Fn()
+  let closure = move || { // 注意, closure 的类型推断为 impl Fn()
     println!("s: {}", &s);
     println!("s: {}", s); // 这样也可以, 因为 pringln! 会自动使用 s 的引用
   };
@@ -111,3 +109,4 @@ eg:
   closure(); // ok
   // println!("{}", s); // Err: borrow of moved value: `s`. 因为 s 的所有权已经被移动到闭包中.
   ```
+**总之, 闭包对变量的捕获方式与其实现的特性类型没有直接关系, 二者均由被捕获变量的实际使用方式决定.**
