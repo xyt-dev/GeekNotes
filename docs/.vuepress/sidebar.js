@@ -16,6 +16,13 @@ export const sidebarConfig = sidebar({
       collapsible: true,
       children: "structure",
     },
+    {
+      text: "UEFILearning",
+      prefix: "UEFILearning/",
+      link: false,
+      collapsible: true,
+      children: "structure",
+    },
   ],
   "/Config/": [
     {
