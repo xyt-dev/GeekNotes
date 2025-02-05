@@ -1,5 +1,5 @@
 ---
-title: Rust进阶
+title: Rust函数式编程
 order: 5
 ---
 
@@ -163,3 +163,86 @@ Rust中函数只要不返回引用(或包含引用的)类型, 就无需显式标
 普通(且安全)的函数返回的引用只可能来自其参数(以及全局static变量), 之所以需要标注借用周期, 是因为函数内逻辑可能十分复杂且不确定, 无法在编译期判断返回引用的借用周期来自哪个参数. \
 但对于闭包来说, 其返回的引用既可能来自其参数又可能来自其所在环境, 而且闭包不支持显式标注借用周期, 解决该问题较麻烦, 所以一般不要让闭包返回引用类型.
 
+## Rust迭代器
+
+Rust迭代器即实现了`Iterator Trait`的类型:
+```rust:no-line-numbers
+pub trait Iterator {
+  type Item; // 关联类型
+
+  fn next(&mut self) -> Option<Self::Item>;
+}
+```
+
+### For循环与迭代器
+
+对于:
+```rust:no-line-numbers
+for element in arr {
+  // ...
+}
+```
+编译器会自动将其转换为类似如下代码:
+```rust:no-line-numbers
+let mut iter = arr.into_iter(); 
+while let Some(element) = iter.next() {
+  // ...
+}
+```
+> while let 语句:
+> ```rust:no-line-numbers
+> while let PATTERN = EXPRESSION {
+>   // 当 EXPRESSION 返回的值能够模式匹配 PATTERN 时, while let 循环继续执行, 同时将匹配到的值绑定到模式中的变量.
+>   // 当无法匹配时, 循环终止, 相当于 break.
+> }
+> ```
+> 
+注意如果手动调用`next`迭代, 则`iter`必须要用`mut`修饰, 因为调用`next`方法要传入可变借用, 需改变迭代器中的状态数据(如当前遍历位置等); 但使用`for in`语句则可以不加`mut`修饰, 因为编译器会先自动进行转换, 如: 
+```rust:no-line-numbers
+let mut _iter = iter;
+```
+
+#### into_iter, iter, iter_mut
+
+还要注意, `into_iter()`会消耗调用者的所有权, 其函数签名为:
+```rust:no-line-numbers
+fn into_iter(self) -> Self::IntoIter
+```
+如果不想要消耗所有权, 可以在`for in`语句中使用变量的引用, 如:
+```rust:no-line-numbers
+for element in &arr { // 或 &mut arr
+  // ...
+}
+```
+以数组的引用为例, 其`IntoIterator`特征实现如下:
+```rust:no-line-numbers
+impl<'a, T, const N: usize> IntoIterator for &'a [T; N] {
+    type Item = &'a T;
+    type IntoIter = Iter<'a, T>;
+
+    fn into_iter(self) -> Iter<'a, T> {
+        self.iter()
+    }
+}
+impl<'a, T, const N: usize> IntoIterator for &'a mut [T; N] {
+    type Item = &'a mut T;
+    type IntoIter = IterMut<'a, T>;
+
+    fn into_iter(self) -> IterMut<'a, T> {
+        self.iter_mut()
+    }
+}
+```
+或者也可以手动调用`iter() / iter_mut()`, 如:
+```rust:no-line-numbers
+for element in arr.iter() { // 或 arr.iter_mut()
+  // ...
+}
+```
+而`iter()`和`iter_mut()`, 都是传入原变量的引用, 不会消耗其所有权.
+
+> into_ 之类的都是拿走所有权, _mut 之类的都是可变借用, 剩下的就是不可变借用. -- Rust语言圣经
+
+- 对于.iter() 方法实现的迭代器，调用 next 方法返回的类型是 Some(&T).
+- 对于 .iter_mut() 方法实现的迭代器，调用 next 方法返回的类型是 Some(&mut T).
+- 而对于 .into_iter() 得到的迭代器, 若获取到的是原集合的所有权, 则调用 next 方法返回的类型是 Some(T).
