@@ -41,9 +41,9 @@ fn main() {
 use std::{env, error::Error, fs};
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
-  /* deepseek: 为了让 OtherError 能够通过 ? 自动转换为 Box<dyn Error>, 
+  /* deepseek: 为了让 OtherError 能够通过 `?` 自动转换为 Box<dyn Error>, 
   OtherError 需要实现 std::error::Error trait 从而能够被 dyn Error 变量绑定, 
-  而且 Rust 标准库已经为所有实现了 Error 的类型提供了 From 实现，以将其转换为 Box<dyn Error> 
+  而且 Rust 标准库为所有实现了 Error 的类型自动提供了 From 实现，以将其转换为 Box<dyn Error> 
   即 from() 可将 OtherError 直接转换为 Box<dyn Error> */
   let content = fs::read_to_string(config.file_path)?;
 
