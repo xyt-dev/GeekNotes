@@ -108,7 +108,7 @@ fn main() {
 > a.func(); // Err: multiple applicable items in scope, multiple `func` found.
 > ref_a.func(); // Err: multiple applicable items in scope, multiple `func` found.
 > ```
-3. 如果类型本身没有实现该方法, 则编译器尝试解引用(通过`Deref`或`DerefMut`特征方法), 然后重复步骤1、2, 这称为解引用方法调用.
+3. 如果类型本身没有实现该方法, 则编译器尝试解引用(可通过`Deref`或`DerefMut`特征方法), 然后重复步骤1、2, 这称为解引用方法调用.
 4. 若`T`不能被解引用, 且`T`是一个定长类型(在编译期类型长度是已知的), 那么编译器也会尝试将`T`从定长类型转为不定长类型, 例如将`[u32; 2]`转为`[u32]`.
 
 
