@@ -23,6 +23,13 @@ export const sidebarConfig = sidebar({
       collapsible: true,
       children: "structure",
     },
+    {
+      text: "RustOS",
+      prefix: "RustOS/",
+      link: false,
+      collapsible: true,
+      children: "structure"
+    },
   ],
   "/Config/": [
     {
