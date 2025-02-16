@@ -30,6 +30,13 @@ export const sidebarConfig = sidebar({
       collapsible: true,
       children: "structure"
     },
+    {
+      text: "SourceCodeReading",
+      prefix: "SourceCodeReading/",
+      link: false,
+      collapsible: true,
+      children: "structure"
+    },
   ],
   "/Config/": [
     {
